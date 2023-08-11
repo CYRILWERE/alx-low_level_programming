@@ -1,13 +1,12 @@
-#include  <stdio.h>
+#include <stdio.h>
 /**
  * main - Entry point
- * Description: 'print lowercase and uppercase alphabet'
- * Return: Always 0
+ * Description: 'print alphabets lowercase and uppercase'
  */
-int main(void)
+int main (void)
 {
-	int n = 97;
-	int n = 65;
+	int n =97;
+	int n =65;
 
 	while (n <= 122)
 	{
