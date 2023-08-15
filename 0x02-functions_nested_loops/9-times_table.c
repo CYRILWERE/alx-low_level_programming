@@ -13,7 +13,7 @@ void times_table(void)
 		{
 			int product = count * s;
 
-			if (s <= 0)
+			if (s != 0)
 			{
 				_putchar(',');
 				if (product < 10)
