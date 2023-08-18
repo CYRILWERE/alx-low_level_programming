@@ -1,5 +1,4 @@
 #include "main.h"
-
 /**
  * print_line - draw a straigjt line in the terminal
  * @n: number of times the character _ should be printed
