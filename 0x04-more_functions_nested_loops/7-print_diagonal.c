@@ -1,5 +1,5 @@
 #include "main.h"
-#include <_putchar('\n').h>
+
 /**
  * print_dignal - Draw a diagnol line according parameter
  * @n: the number of times to print diagnol lines
