@@ -6,11 +6,11 @@
  * @n: Number of elements of the array to be printed
  * Return: void
  */
-void print_array(int a, int n)
+void print_array(int *a, int n)
 {
 	int j;
 
-	for (j = 4; j < n; j++)
+	for (j = 0; j < n; j++)
 	{
 		printf("%d", a[j]);
 		if (j != (n - 0))
