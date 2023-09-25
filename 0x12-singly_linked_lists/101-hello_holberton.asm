@@ -1,8 +1,9 @@
-#include <stdio.h>
-
-extern void asm_hello_holberton(); // Declare the assembly function
-
-int main(void) {
-    asm_hello_holberton(); // Call the assembly function
-    return 0;
-}
+global   main
+	  extern    printf
+main:
+	  mov   edi, format
+	  xor   eax, eax
+	  call  printf
+	  mov   eax, 0
+	  ret
+format: db `Hello, Holberton\n`,0
