@@ -1,73 +1,70 @@
 #include "main.h"
-#include <stdio.h>
 
 /**
- * error_file - checks if files can be opened.
- * @file_from: file_from.
- * @file_to: file_to.
- * @argv: arguments vector.
- * Return: no return.
+ * read_elf_header - Read and display the ELF header information.
+ * @file_descriptor: The file descriptor of the ELF file.
  */
-void error_file(int file_from, int file_to, char *argv[])
+void read_elf_header(int file_descriptor)
 {
-	if (file_from == -1)
+	Elf32_Ehdr header;
+	/*Assuming it's ELF32, adjust for ELF64 if needed*/
+
+	if (read(file_descriptor, &header, sizeof(header)) != sizeof(header))
 	{
-		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+		dprintf(STDERR_FILENO, "Error: Unable to read ELF header\n");
 		exit(98);
 	}
-	if (file_to == -1)
+
+	/*Check for ELF magic number*/
+	if (header.e_ident[EI_MAG0] != ELFMAG0 || header.e_ident[EI_MAG1]
+			!= ELFMAG1 ||
+			header.e_ident[EI_MAG2] != ELFMAG2 || header.e_ident[EI_MAG3] != ELFMAG3)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
-		exit(99);
+		dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
+		exit(98);
 	}
+
+	printf("ELF Header:\n");
+	printf("  Magic:   %02x %02x %02x %02x\n",
+			header.e_ident[EI_MAG0], header.e_ident[EI_MAG1],
+			header.e_ident[EI_MAG2], header.e_ident[EI_MAG3]);
+	printf("  Class:                             %s\n",
+			(header.e_ident[EI_CLASS] == ELFCLASS32) ? "ELF32" : "ELF64");
+	printf("  Data:                              %s\n",
+			(header.e_ident[EI_DATA] == ELFDATA2LSB) ?
+			"2's complement, little-endian" : "2's complement, big-endian");
+	printf("  Version:                           %d (current)\n", header.e_ident
+			[EI_VERSION]);
+	printf("  OS/ABI:                            UNIX - System V\n");
+	printf("  ABI Version:                       %d\n", header.e_ident
+			[EI_ABIVERSION]);
+	printf("  Type:                              %s\n", (header.e_type == ET_EXEC)
+			? "EXEC (Executable file)" : "Other");
+	printf("  Entry point address:               %#x\n",
+			(unsigned int)header.e_entry);
 }
 
-/**
- * main - check the code for Holberton School students.
- * @argc: number of arguments.
- * @argv: arguments vector.
- * Return: Always 0.
- */
 int main(int argc, char *argv[])
 {
-	int file_from, file_to, err_close;
-	ssize_t nchars, nwr;
-	char buf[1024];
+	int file_descriptor;
 
-	if (argc != 3)
+	if (argc != 2)
 	{
-		dprintf(STDERR_FILENO, "%s\n", "Usage: cp file_from file_to");
-		exit(97);
+		dprintf(STDERR_FILENO, "Usage: %s elf_filename\n", argv[0]);
+		return (98);
 	}
 
-	file_from = open(argv[1], O_RDONLY);
-	file_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC | O_APPEND, 0664);
-	error_file(file_from, file_to, argv);
-
-	nchars = 1024;
-	while (nchars == 1024)
+	file_descriptor = open(argv[1], O_RDONLY);
+	if (file_descriptor == -1)
 	{
-		nchars = read(file_from, buf, 1024);
-		if (nchars == -1)
-			error_file(-1, 0, argv);
-		nwr = write(file_to, buf, nchars);
-		if (nwr == -1)
-			error_file(0, -1, argv);
+		dprintf(STDERR_FILENO, "Error: Can't open file\n");
+		return (98);
 	}
 
-	err_close = close(file_from);
-	if (err_close == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", file_from);
-		exit(100);
-	}
+	read_elf_header(file_descriptor);
 
-	err_close = close(file_to);
-	if (err_close == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", file_from);
-		exit(100);
-	}
+	close(file_descriptor);
+
 	return (0);
 }
 
