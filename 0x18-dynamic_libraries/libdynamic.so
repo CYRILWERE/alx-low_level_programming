@@ -1,0 +1,15 @@
+#include "main.h"
+
+/* Implement your functions here */
+/* Example: */
+
+int _putchar(char c) {
+    /* Your implementation */
+}
+
+int _islower(int c) {
+    /* Your implementation */
+}
+
+/* Implement other functions similarly */
+
